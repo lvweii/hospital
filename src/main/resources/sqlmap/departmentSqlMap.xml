@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dynamic-hibernate namespace="com.jsict.biz.model.Department">
+    <query name="selectByPage" qlType="JPQL">
+        <![CDATA[
+        select t  from Department t Where t.delFlag = :delFlag
+                #if($deptName && $deptName.length() > 0)
+                AND t.deptName like concat('%', :deptName, '%')
+                #end
+                #if($deptCode && $deptCode.length() > 0)
+                AND t.deptCode like concat('%', :deptCode, '%')
+                #end
+                and t.type = '1'
+        ]]> order by t.sort asc
+    </query>
+
+    <query name="getListByNameCode" qlType="SQL">
+        <![CDATA[
+        select d.id,d.dept_name as deptName,d.dept_code as deptCode from department d
+        where d.del_flag = :delFlag
+        #if($deptName && $deptName.length() > 0)
+           AND d.dept_name = :deptName
+        #end
+        #if($deptCode && $deptCode.length() > 0)
+           AND d.dept_code = :deptCode
+        #end
+	      ]]> order by d.sort asc
+    </query>
+
+</dynamic-hibernate>

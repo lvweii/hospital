@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dynamic-hibernate namespace="com.jsict.biz.model.Config">
+    <query name="selectByPage" qlType="JPQL">
+        <![CDATA[
+        select t from Config t Where t.delFlag = :delFlag
+
+         #if($keyy && $keyy.length() > 0)
+        	AND t.keyy like concat('%', :keyy, '%')
+      	#end
+
+      	 #if($valuee && $valuee.length() > 0)
+      	    AND t.valuee = :valuee
+      	#end
+
+      	  #if($levell && $levell.length() > 0)
+        	AND t.levell = :levell
+      	#end
+
+      	 #if($name && $name.length() > 0)
+        	AND t.name like concat('%', :name, '%')
+      	#end
+
+      	 #if($canbedelete && $canbedelete.length() > 0)
+        	AND t.canbedelete = :canbedelete
+      	#end
+        ]]>
+    </query>
+</dynamic-hibernate>

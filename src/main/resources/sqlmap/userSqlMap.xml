@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dynamic-hibernate namespace="com.jsict.biz.model.User">
+    <query name="selectByPage" qlType="JPQL">
+        <![CDATA[
+        select t from User t Where t.delFlag = :delFlag
+                #if($deptId && $deptId.length() > 0)
+                AND (t.deptId = :deptId)
+                #end
+
+                #if($name && $name.length() > 0)
+                AND t.name like concat('%', :name, '%')
+                #end
+
+                #if($type && $type.length() > 0)
+                AND (t.type = :type)
+                #end
+
+        ]]> order by t.sort asc
+    </query>
+
+    <query name="getListByDept" qlType="SQL">
+        <![CDATA[
+        select u.id, u.name from users u
+        where u.del_flag = :delFlag
+        and u.dept_id = :deptId
+	]]>
+    </query>
+
+    <query name="query_multi_table" qlType="SQL">
+        <![CDATA[
+        select u.id, u.name, u.birthday, ud.dept_id as deptId, d.dept_name as deptName from users u left join user_in_dept ud on u.id = ud.user_id
+        left join department d on d.id = ud.dept_id where u.user_id = :name
+	]]>
+    </query>
+
+    <query name="query_multi_table2" qlType="SQL">
+        <![CDATA[
+        select u.id, u.name, u.birthday, u.dept_id as deptId, d.dept_name as deptName from users u ,department d where d.id = u.dept_id and u.dept_id in ( :deptId)
+	]]>
+    </query>
+
+    <query name="update_users_by_sql" qlType="SQL">
+        <![CDATA[
+        update users u set u.email= :email where u.id= :id
+        ]]>
+    </query>
+
+    <query name="getOrderMaker" qlType="SQL">
+        <![CDATA[
+        select u.id,u.`name`  from user_in_role uir
+        left join users u on u.id = uir.user_id
+        left join role r on r.id = uir.role_id
+        where r.role_name='order_maker'
+        and u.del_flag = 0
+	]]>
+    </query>
+    
+</dynamic-hibernate>
