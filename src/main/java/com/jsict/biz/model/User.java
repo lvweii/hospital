@@ -150,6 +150,9 @@ public class User extends BaseEntity<String> implements IUser<Department, Role>{
     @Column(name = "last_change_pwd_time")
     private Date lastChangePwdTime;
 
+    @Transient
+    private List<Department> selectDeptList;
+
     public Date getLastChangePwdTime() {
         return lastChangePwdTime;
     }
@@ -375,6 +378,14 @@ public class User extends BaseEntity<String> implements IUser<Department, Role>{
 
     public void setTime(String time) {
         this.time = time;
+    }
+
+    public List<Department> getSelectDeptList() {
+        return selectDeptList;
+    }
+
+    public void setSelectDeptList(List<Department> selectDeptList) {
+        this.selectDeptList = selectDeptList;
     }
 
     @Override

@@ -44,50 +44,70 @@ public class UserController extends
     @Autowired
     private DepartmentDao departmentDao;
 
-    /**
-     * 加入对关联部门的校验
-     *
-     * @param entity 实体对象
-     * @param paramToken CSRF Token
-     * @param request HttpServletRequest
-     * @return
-     */
+   /**
+    *
+    * 功能描述: 保存用户
+    *
+    * @param:
+    * @return: 
+    * @auther: Lv
+    * @date: 2019/2/25 15:39
+    */
     @Override
     @RequestMapping(value = "/save", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
     public Response save(@ModelAttribute User entity, @RequestParam(value = CSRFTokenManager.CSRF_PARAM_NAME) String paramToken, HttpServletRequest request){
-
-        String deptId = entity.getDeptId();
-        List<Department> depts = entity.getDeptList();
-        for(Department dept: depts){
-            if(dept.getId().equals(deptId)){
-                return new Response(-1,"关联部门包含用户所在部门");
-            }
+        Map<String,Object> params = new HashMap<>();
+        params.put("delFlag",0);
+        params.put("userId",entity.getUserId());
+        List<User> list = userDao.getObjectListBySqlKey("getListByUserId",params,User.class);
+        if(list != null && list.size() > 0){
+            return new Response(ERROR,"用户名已经存在");
         }
         return super.save(entity, paramToken, request);
     }
 
     /**
-     * 加入对关联部门的校验
      *
-     * @param entity 实体对象
-     * @param paramToken CSRF Token
-     * @param request HttpServletRequest
-     * @return
+     * 功能描述: 编辑用户
+     *
+     * @param:
+     * @return:
+     * @auther: Lv
+     * @date: 2019/2/25 16:56
      */
     @Override
     @RequestMapping(value = "/update", method = RequestMethod.POST, produces = "application/json")
     @ResponseBody
     public Response update(@ModelAttribute User entity, @RequestParam(value = CSRFTokenManager.CSRF_PARAM_NAME) String paramToken, HttpServletRequest request){
-
-        String deptId = entity.getDeptId();
-        List<Department> depts = entity.getDeptList();
-        for(Department dept: depts){
-            if(dept.getId().equals(deptId)){
-                return new Response(-1,"关联部门包含用户所在部门");
+        User db = this.generiService.getWithoutDic(entity.getId());
+        if(!entity.getUserId().equals(db.getUserId())){
+            Map<String,Object> params = new HashMap<>();
+            params.put("delFlag",0);
+            params.put("userId",entity.getUserId());
+            List<User> list = userDao.getObjectListBySqlKey("getListByUserId",params,User.class);
+            if(list != null && list.size() > 0){
+                return new Response(ERROR,"用户名已经存在");
             }
         }
         return super.update(entity, paramToken, request);
+    }
+
+    @RequestMapping(value = {"/getUserForUpdate/{id}"}, method = {RequestMethod.GET}, produces = {"application/json"})
+    @ResponseBody
+    public User get(@PathVariable String id) {
+        try {
+            User user = this.generiService.getWithoutDic(id);
+            Map<String,Object> params = new HashMap<>();
+            params.put("delFlag",0);
+            params.put("type",user.getType());
+            List<Department> list = departmentDao.getObjectListBySqlKey("getListByNameCode",params,Department.class);
+            user.setSelectDeptList(list);
+            return user;
+        } catch (Exception var3) {
+            logger.error("主键查询出错", var3);
+            throw new RestControllerException("主键查询出错", var3);
+        }
     }
 
     @ResponseBody
@@ -140,6 +160,25 @@ public class UserController extends
     public List<Department> getDept(){
         Map<String,Object> params = new HashMap<>();
         params.put("delFlag",0);
+        List<Department> list = departmentDao.getObjectListBySqlKey("getListByNameCode",params,Department.class);
+        return list;
+    }
+
+    /**
+     *
+     * 功能描述: 获取科室或者患者部门
+     *
+     * @param:
+     * @return:
+     * @auther: Lv
+     * @date: 2019/2/25 10:27
+     */
+    @RequestMapping(value = "/getDeptList", method = RequestMethod.GET, produces = "application/json")
+    @ResponseBody
+    public List<Department> getDeptList(String type){
+        Map<String,Object> params = new HashMap<>();
+        params.put("delFlag",0);
+        params.put("type",type);
         List<Department> list = departmentDao.getObjectListBySqlKey("getListByNameCode",params,Department.class);
         return list;
     }

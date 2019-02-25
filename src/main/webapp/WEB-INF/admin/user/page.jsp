@@ -79,7 +79,6 @@
             if($("#deptId").val() !=""){
               where.deptId = $("#deptId").val();
             }
-            console.log(where)
             table.render({
                 elem: '#userTable'
                 , cols: [[

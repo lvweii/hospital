@@ -118,7 +118,7 @@
                         parent.layui.layer.msg("提交成功");
                         var index = parent.layer.getFrameIndex(window.name);
                         parent.layer.close(index);
-                        parent.layui.table.reload('departmentTable'); //重载表格
+                        parent.layui.table.reload('roleTable'); //重载表格
                         parent.reloadTree();
                     } else {
                         layui.layer.msg(data.msg);

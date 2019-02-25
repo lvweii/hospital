@@ -3,8 +3,11 @@ package com.jsict.biz.dao.impl;
 import com.jsict.biz.dao.UserDao;
 import com.jsict.biz.model.User;
 import com.jsict.framework.core.dao.hibernate.GenericHibernateDaoImpl;
+import com.jsict.framework.core.security.model.IUser;
 import com.jsict.framework.utils.Encodes;
+import java.util.Date;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -40,6 +43,26 @@ public class UserDaoImpl extends GenericHibernateDaoImpl<User, String> implement
         dbUser.setPasswordErrorTimes(user.getPasswordErrorTimes());
         if(StringUtils.isNotBlank(user.getPassword()))
             dbUser.setPassword(user.getPassword());
+        if(user.getType().contains("|")){
+            String[] types = user.getType().split("\\|");
+            dbUser.setType(types[2]);
+        }else
+            dbUser.setType(user.getType());
+        if(user.getTitle().contains("|")){
+            String[] titles = user.getTitle().split("\\|");
+            dbUser.setTitle(titles[2]);
+        }else
+            dbUser.setTitle(user.getTitle());
+        dbUser.setPhoto(user.getPhoto());
+        dbUser.setInstruction(user.getInstruction());
+        dbUser.setGood(user.getGood());
+        dbUser.setTime(user.getTime());
+        dbUser.setUserId(user.getUserId());
+        dbUser.setUpdatedDate(new Date());
+        IUser iu = (IUser)SecurityUtils.getSubject().getPrincipal();
+        if (iu != null) {
+            dbUser.setUpdaterId(iu.getId());
+        }
         return super.update(dbUser);
     }
 }

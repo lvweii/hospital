@@ -39,12 +39,32 @@ public class UserServiceImpl extends GeneriServiceImpl<User, String> implements 
     @Override
     @Transactional
     public User save(User entity) {
-        User query = new User();
-        query.setUserId(entity.getUserId());
-        User user = singleResult(query);
-        if(user!=null)
-            throw new RestControllerException("用户名已经存在");
+//        User query = new User();
+//        query.setUserId(entity.getUserId());
+//        User user = singleResult(query);
+//        if(user!=null)
+//            throw new RestControllerException("用户名已经存在");
         return super.save(entity);
+    }
+
+    /**
+     * 添加userId唯一性校验
+     *
+     * @param entity  实体
+     * @return
+     */
+    @Override
+    @Transactional
+    public User update(User entity) {
+//        User db = super.get(entity.getId());
+//        if (!entity.getUserId().equals(db.getUserId())){
+//            User query = new User();
+//            query.setUserId(entity.getUserId());
+//            User user = singleResult(query);
+//            if(user!=null)
+//                throw new RestControllerException("用户名已经存在");
+//        }
+        return super.update(entity);
     }
 
     /**

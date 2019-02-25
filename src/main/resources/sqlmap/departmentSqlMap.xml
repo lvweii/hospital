@@ -23,6 +23,9 @@
         #if($deptCode && $deptCode.length() > 0)
            AND d.dept_code = :deptCode
         #end
+        #if($type && $type.length() > 0)
+           AND d.type = :type
+        #end
 	      ]]> order by d.sort asc
     </query>
 
