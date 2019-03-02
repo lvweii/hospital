@@ -55,7 +55,7 @@
             table.render({
                 elem: '#departmentTable'
                 , cols: [[
-                    {checkbox: true, fixed: true}
+                    {type: 'numbers',  fixed: true}
                     , {field: 'deptName', title: '科室名称', width: 120}
                     , {field: 'deptCode', title: '科室编码', width: 120}
                     , {field: 'instruction', title: '科室简介', width: 360}

@@ -57,6 +57,7 @@ public class UserDaoImpl extends GenericHibernateDaoImpl<User, String> implement
         dbUser.setInstruction(user.getInstruction());
         dbUser.setGood(user.getGood());
         dbUser.setTime(user.getTime());
+        dbUser.setHourPeople(user.getHourPeople());
         dbUser.setUserId(user.getUserId());
         dbUser.setUpdatedDate(new Date());
         IUser iu = (IUser)SecurityUtils.getSubject().getPrincipal();

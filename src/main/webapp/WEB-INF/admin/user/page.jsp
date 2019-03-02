@@ -82,7 +82,7 @@
             table.render({
                 elem: '#userTable'
                 , cols: [[
-                    {checkbox: true, fixed: true}
+                    {type: 'numbers',  fixed: true}
                     , {field: 'name', title: '姓名', width: 120}
                     , {field: 'gender', title: '性别', width: 120,templet: function(d){
                         var info = d.gender.split("|");

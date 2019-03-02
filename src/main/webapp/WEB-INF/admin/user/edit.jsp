@@ -60,12 +60,13 @@
             </div>
         </div>
         <div class="layui-form-item">
-            <label class="layui-form-label">性别</label>
+            <label class="layui-form-label">性别<label style="color:red;">*</label></label>
             <div class="layui-input-block">
                 <select id="gender"
                         name="gender"
                         class="layui-select-button"
                         lay-filter="gender"
+                        lay-verify="required"
                         type="text">
                     <option value="">请选择</option>
                     <option value="0">男</option>
@@ -102,6 +103,13 @@
             <label class="layui-form-label">擅长<label style="color:red;">*</label></label>
             <div class="layui-input-block">
                 <textarea class="layui-textarea" id="good" name="good" rows="3" lay-verify="good|showRequired" placeholder="请输入医生擅长领域"></textarea>
+            </div>
+        </div>
+
+        <div class="layui-form-item" id="divpeople" style="display: none">
+            <label class="layui-form-label">每小时挂号</label>
+            <div class="layui-input-block">
+                <input class="layui-input" type="text" name="hourPeople" id="hourPeople" placeholder="请输入每小时挂号上限" lay-verify="hourPeople"/>
             </div>
         </div>
 
@@ -190,6 +198,7 @@
           $("#divtitle").show();
           $("#divinstruction").show();
           $("#divgood").show();
+          $("#divpeople").show();
           $("#divtime").show();
         } else if (data.value == '2'){
             //患者
@@ -220,6 +229,7 @@
           $("#divtitle").hide();
           $("#divinstruction").hide();
           $("#divgood").hide();
+          $("#divpeople").hide();
           $("#divtime").hide();
         }
       });
@@ -274,6 +284,15 @@
             good:function (value) {
                 if (value.length >50) {
                     return '医生擅长领域长度必须小于50';
+                }
+            },
+            hourPeople: function (value) {
+                if (value != ''){
+                  if (value<1 || value >99) {
+                    return '人数必须在1到99位之间';
+                  }else if(isNaN(value)){
+                    return '人数必须为整数';
+                  }
                 }
             },
             name: [/^([\u4E00-\u9FA5A-Za-z0-9_]){0,20}$/, '必须是长度小于20的字符'],
@@ -367,7 +386,6 @@
                     $("#deptId").val(data.deptId);
                     form.render();  //重新渲染form
 
-                    $("#deptId").val(data.deptId);
                     $("#name").val(data.name);
                     $("#userId").val(data.userId);
                     $("#mobile").val(data.mobile);
@@ -383,6 +401,7 @@
                       $("#title").val(data.title);
                       $("#instruction").val(data.instruction);
                       $("#good").val(data.good);
+                      $("#hourPeople").val(data.hourPeople);
                       $("#time").val(data.time);
                       if (data.time != null && data.time != ''){
                         var times = $("input[name='dtime']");
@@ -398,6 +417,7 @@
                       $("#divtitle").show();
                       $("#divinstruction").show();
                       $("#divgood").show();
+                      $("#divpeople").show();
                       $("#divtime").show();
                     }
 

@@ -98,6 +98,10 @@ public class User extends BaseEntity<String> implements IUser<Department, Role>{
     @Column(name = "time", length = 500)
     private String time;
 
+    @Max(value = 99, message = "人数必须小于99")
+    @Column(name = "hour_people", length = 2)
+    private Integer hourPeople;
+
     @Max(value = 99, message = "排序必须小于99")
     @Column(name = "sort", length = 2)
     private Integer sort;
@@ -152,6 +156,12 @@ public class User extends BaseEntity<String> implements IUser<Department, Role>{
 
     @Transient
     private List<Department> selectDeptList;
+
+    @Transient
+    private String date;
+
+    @Transient
+    private String am;
 
     public Date getLastChangePwdTime() {
         return lastChangePwdTime;
@@ -386,6 +396,30 @@ public class User extends BaseEntity<String> implements IUser<Department, Role>{
 
     public void setSelectDeptList(List<Department> selectDeptList) {
         this.selectDeptList = selectDeptList;
+    }
+
+  public Integer getHourPeople() {
+    return hourPeople;
+  }
+
+  public void setHourPeople(Integer hourPeople) {
+    this.hourPeople = hourPeople;
+  }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public String getAm() {
+        return am;
+    }
+
+    public void setAm(String am) {
+        this.am = am;
     }
 
     @Override
