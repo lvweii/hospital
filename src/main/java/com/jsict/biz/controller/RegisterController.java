@@ -8,9 +8,13 @@ import com.jsict.biz.model.User;
 import com.jsict.biz.service.UserService;
 import com.jsict.framework.core.controller.AbstractGenericController;
 import com.jsict.framework.core.controller.RestControllerException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +50,40 @@ public class RegisterController extends
   @ResponseBody
   public Page<User> doctorPage(@ModelAttribute User user, @PageableDefault Pageable pageable){
     try{
-      user.setType("1");
+      user.setType("1");//查询医生
+      String dateStr = user.getDate();//就诊日期
+      String am = user.getAm();//0:上午  1：下午
+      if (StringUtils.isNotBlank(dateStr)){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = sdf.parse(dateStr);
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(date);
+        int w = cal.get(Calendar.DAY_OF_WEEK) - 1;//获取当天是周几
+        String time = null;
+        switch(w){
+          case 1:
+            if ("0".equals(am)){time = "1,";}
+            else {time = "2,";}
+            break;
+          case 2:
+            if ("0".equals(am)){time = "3,";}
+            else {time = "4,";}
+            break;
+          case 3:
+            if ("0".equals(am)){time = "5,";}
+            else {time = "6,";}
+            break;
+          case 4:
+            if ("0".equals(am)){time = "7,";}
+            else {time = "8,";}
+            break;
+          case 5:
+            if ("0".equals(am)){time = "9,";}
+            else {time = "10,";}
+            break;
+        }
+        user.setTime(time);
+      }
       return userService.findByPage(user, pageable);
     }catch(Exception e){
       logger.error("翻页查询出错", e);

@@ -33,7 +33,7 @@
                             <button class="layui-btn layuiadmin-btn-list" lay-submit lay-filter="LAY-app-search" id="LAY-app-search">
                                 <i class="layui-icon layui-icon-search layuiadmin-button-btn"></i>
                             </button>
-                            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                            <button id="reset" class="layui-btn layui-btn-primary">重置</button>
                         </div>
                     </div>
                 </form>
@@ -113,6 +113,16 @@
         $("#am").val(am);
       });
 
+      $("#reset").on("click",function(){
+        $("#deptId").val('');
+        $('#week tbody tr td').css("background-color","#fff");//日期背景全部复原
+        $("#date").val('');//日期置空
+        $("#am").val('');//上下午置空
+        form.render();
+        //防止跳转
+        return false;
+      })
+
       function getDept(){
         $.ajax({
           url: "./getDeptList?type=1",
@@ -160,7 +170,7 @@
                   }}
                 , {field: 'instruction', title: '医生简介', width: 150}
                 , {field: 'good', title: '擅长领域', width: 150}
-                , {fixed: 'right', title: '操作', width: 200,align: 'center', toolbar: '#barOption'}
+                , {fixed: 'right', title: '操作', width: 150,align: 'center', toolbar: '#barOption'}
               ]]
                 , url: '${ctxPath}/register/doctorPage'
                 , method: 'post'
@@ -194,30 +204,14 @@
         table.on('tool(doctorTable)', function (obj) {
             var data = obj.data
                 , layEvent = obj.event;
-            if (layEvent == "edit") {
-                add(data);
-            } else if (layEvent == "del") {
-                del(data);
+            if (layEvent == "register") {
+              register(data);
             }
         });
 
-        var active = {
-            add: add,
-        };
-
-        $('.layui-btn.layuiadmin-btn-list').on('click', function () {
-            var type = $(this).data('type');
-            active[type] ? active[type].call(this) : '';
-        });
-
-        function add(data) {
-            url = "${ctxPath}/dept/?method=edit";
-            if (data) {
-                url += "&id=" + data.id;
-                openSubmitLayer(url, "编辑科室", '600px', '500px');
-            } else {
-                openSubmitLayer(url, "添加科室", '600px', '500px');
-            }
+        function register(data) {
+            var url = "${ctxPath}/register/?method=register&id="+ data.id;
+            openSubmitLayer(url, "预约挂号", '800px', '500px');
         }
 
         function del(value) {
@@ -244,9 +238,7 @@
 </script>
 
 <script type="text/html" id="barOption">
-    <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="edit"><i
-            class="layui-icon layui-icon-edit"></i>编辑</a>
-    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del"><i
-            class="layui-icon layui-icon-delete"></i>删除</a>
+    <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="register"><i
+            class="layui-icon layui-icon-survey"></i>预约挂号</a>
 </script>
 <%@include file="../footer.jsp" %>

@@ -22,7 +22,7 @@ function openExtendLayer(url, title, width, height, settings) {
         title: title,
         maxmin: true,
         area: [width, height],
-        offset: ['10px', '100px'],
+        offset: ['10px'],
         content: url
     }));
 }

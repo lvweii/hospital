@@ -15,6 +15,10 @@
                 AND (t.type = :type)
                 #end
 
+                #if($time && $time.length() > 0)
+                AND t.time like concat('%', :time, '%')
+                #end
+
         ]]> order by t.sort asc
     </query>
 

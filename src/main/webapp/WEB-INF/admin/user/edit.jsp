@@ -241,11 +241,11 @@
         var times = "";
         if (time.length>0){
           for (var i=0;i<time.length;i++){
-            if (i<time.length-1){
+            // if (i<time.length-1){
               times += time[i].value + ",";
-            }else{
-              times += time[i].value;
-            }
+            // }else{
+            //   times += time[i].value;
+            // }
           }
         }
         $("#time").val(times);
