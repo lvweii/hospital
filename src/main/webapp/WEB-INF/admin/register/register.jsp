@@ -7,27 +7,27 @@
     <div class="layui-form-item" style="margin-bottom: 0px;">
         <label class="layui-form-label" style="padding: 4px 15px 4px 0px;width: 60px;">姓名：</label>
         <div class="layui-input-block" style="margin-left: 75px">
-            <label class="layui-form-label" style="text-align: left;padding: 4px 0px;width: 200px;">医生一</label>
-            <input class="layui-input" type="hidden" name="doctorId" id="doctor_id" />
+            <label id="doctorName" class="layui-form-label" style="text-align: left;padding: 4px 0px;width: 200px;">-</label>
+            <input class="layui-input" type="hidden" name="doctorId" id="doctorId" />
         </div>
     </div>
     <div class="layui-form-item" style="margin-bottom: 0px;">
         <label class="layui-form-label" style="padding: 4px 15px 4px 0px;width: 60px;">科室：</label>
         <div class="layui-input-block" style="margin-left: 75px">
-            <label class="layui-form-label" style="text-align: left;padding: 4px 0px;width: 200px;">内科</label>
+            <label id="deptName" class="layui-form-label" style="text-align: left;padding: 4px 0px;width: 200px;">-</label>
         </div>
     </div>
     <div class="layui-form-item" style="margin-bottom: 0px;">
         <label class="layui-form-label" style="padding: 4px 15px 4px 0px;width: 60px;">职称：</label>
         <div class="layui-input-block" style="margin-left: 75px">
-            <label class="layui-form-label" style="text-align: left;padding: 4px 0px;width: 200px;">主任医师</label>
+            <label id="title" class="layui-form-label" style="text-align: left;padding: 4px 0px;width: 200px;">-</label>
         </div>
     </div>
     <div class="layui-collapse" lay-accordion style="margin-left: 8px;margin-bottom: 15px;">
         <div class="layui-colla-item">
             <h2 class="layui-colla-title" style="background-color: #F2F2D3">医生简介</h2>
             <div class="layui-colla-content layui-show">
-                <span>以下文件请上传.docx格式的模板，如为.doc格式，请另存为.docx格式后再上传！（请勿直接修改后缀名）</span>
+                <span id="instruction"></span>
             </div>
         </div>
     </div>
@@ -35,7 +35,7 @@
         <div class="layui-colla-item">
             <h2 class="layui-colla-title" style="background-color: #F2F2D3">擅长</h2>
             <div class="layui-colla-content layui-show">
-                <span>以下文件请上传.docx格式的模板，如为.doc格式，请另存为.docx格式后再上传！（请勿直接修改后缀名）</span>
+                <span id="good"></span>
             </div>
         </div>
     </div>
@@ -59,41 +59,41 @@
             <th>操作</th>
         </tr>
         </thead>
-        <tbody>
-        <tr>
-            <td id="d1_1">消化科</td>
-            <td id="d2_1">星期三 上午<br>2019-03-01</td>
-            <td id="d3_1">
-                <input type="radio" name="timeRange" value="1" title="08:00-09:00">
-                <input type="radio" name="timeRange" value="2" title="09:00-10:00">
-                <input type="radio" name="timeRange" value="3" title="10:00-11:00">
-                <input type="radio" name="timeRange" value="4" title="11:00-12:00">
-            </td>
-            <td id="d4_1">
-                <a class="layui-btn layui-btn-normal layui-btn-xs"><i
-                    class="layui-icon layui-icon-survey"></i>预约</a>
-            </td>
-        </tr>
-        <tr>
-            <td id="d1_2">心血管科</td>
-            <td id="d2_2">星期四 下午<br>2019-03-02</td>
-            <td id="d3_2">
-                <input type="radio" name="timeRange" value="5" title="14:00-15:00">
-                <input type="radio" name="timeRange" value="6" title="15:00-16:00">
-                <input type="radio" name="timeRange" value="7" title="16:00-17:00">
-                <input type="radio" name="timeRange" value="8" title="17:00-18:00">
-            </td>
-            <td id="d4_2">
-                <a class="layui-btn layui-btn-normal layui-btn-xs"><i
-                        class="layui-icon layui-icon-survey"></i>预约</a>
-            </td>
-        </tr>
+        <tbody id="tbody">
+        <%--<tr>--%>
+            <%--<td id="d1_1">消化科</td>--%>
+            <%--<td id="d2_1">星期三 上午<br>2019-03-01</td>--%>
+            <%--<td id="d3_1">--%>
+                <%--<input type="radio" name="timeRange" value="1" title="08:00-09:00">--%>
+                <%--<input type="radio" name="timeRange" value="2" title="09:00-10:00">--%>
+                <%--<input type="radio" name="timeRange" value="3" title="10:00-11:00">--%>
+                <%--<input type="radio" name="timeRange" value="4" title="11:00-12:00">--%>
+            <%--</td>--%>
+            <%--<td id="d4_1">--%>
+                <%--<a class="layui-btn layui-btn-normal layui-btn-xs"><i--%>
+                    <%--class="layui-icon layui-icon-survey"></i>预约</a>--%>
+            <%--</td>--%>
+        <%--</tr>--%>
+        <%--<tr>--%>
+            <%--<td id="d1_2">心血管科</td>--%>
+            <%--<td id="d2_2">星期四 下午<br>2019-03-02</td>--%>
+            <%--<td id="d3_2">--%>
+                <%--<input type="radio" name="timeRange" value="5" title="14:00-15:00">--%>
+                <%--<input type="radio" name="timeRange" value="6" title="15:00-16:00">--%>
+                <%--<input type="radio" name="timeRange" value="7" title="16:00-17:00">--%>
+                <%--<input type="radio" name="timeRange" value="8" title="17:00-18:00">--%>
+            <%--</td>--%>
+            <%--<td id="d4_2">--%>
+                <%--<a class="layui-btn layui-btn-normal layui-btn-xs"><i--%>
+                        <%--class="layui-icon layui-icon-survey"></i>预约</a>--%>
+            <%--</td>--%>
+        <%--</tr>--%>
         </tbody>
     </table>
 
-    <div class="layui-form-item layui-hide">
-        <input type="button" lay-submit lay-filter="layuiadmin-app-form-submit" id="layuiadmin-app-form-submit" value="提交">
-    </div>
+    <%--<div class="layui-form-item layui-hide">--%>
+        <%--<input type="button" lay-submit lay-filter="layuiadmin-app-form-submit" id="layuiadmin-app-form-submit" value="提交">--%>
+    <%--</div>--%>
 </form>
 </div>
 <script>
@@ -106,79 +106,146 @@
             , form = layui.form
             , $ = layui.jquery;
 
-        var id = "${id}";
-        //根据id获取科室详情
+      function showLoad(){
+        return layer.msg('保存中...', {icon: 16,shade: [0.5, '#f5f5f5'],scrollbar: false, time:100000}) ;
+      }
+      function closeLoad(){
+        layer.close(layer.index);
+      }
 
-        function editdept() {
+      $(document).ready(function(){
+        // 获取医生信息及值班情况
+        getInfo("${id}");
+      });
+
+        function getInfo(id) {
             var dt = (new Date()).getTime();
             $.ajax({
-                url: "./get/" + id,
+                url: "./getInfo/" + id,
                 dataType: "json",
                 type: "get",
                 data: {
                     dt: dt
                 },
                 success: function (data) {
-                    $("#id").val(data.id);
-                    $("#deptCode").val(data.deptCode);
-                    $("#deptName").val(data.deptName);
-                    $("#sort").val(data.sort);
-                    $("#instruction").val(data.instruction);
+                  console.log(data);
+                    $("#doctorName").text(data.doctor.name);
+                    $("#doctorId").val(data.doctor.id);
+                    $("#deptName").text(data.doctor.department.deptName);
+                    if (data.doctor.title){
+                      var info = data.doctor.title.split("|");
+                      $("#title").text(info[info.length - 1]);
+                    }
+                    $("#instruction").text(data.doctor.instruction);
+                    $("#good").text(data.doctor.good);
+
+                    //加载班表信息
+                    var html = '';
+                    if(data.doctor.time){
+                      var time = data.doctor.time.substring(0,data.doctor.time.length-1);
+                      var timeArr = time.split(",");
+                      var now = new Date();
+                      var nowTime = now.getTime();
+                      var week = now.getDay();//0-周日，6-周六
+                      var arr = ["周日","周一","周二","周三","周四","周五","周六"];
+                      var thisWeek = [];
+                      var nextWeek = [];
+                      for (var i = 0; i < timeArr.length; i++) {
+                        if (timeArr[i]<=2*week){
+                          nextWeek.push(timeArr[i]);
+                        }else {
+                          thisWeek.push(timeArr[i]);
+                        }
+                      }
+                      var newTime = thisWeek.concat(nextWeek);//按照时间顺序排列一周内的新的时间
+                      console.log(newTime);
+                      for (var i = 0; i < newTime.length; i++) {
+                        var temp = newTime[i]%2==0?parseInt(newTime[i]):parseInt(newTime[i])+1;//不用parseInt会当成字符串拼接
+                        // console.log(temp);
+                        if (newTime[i]>2*week){
+                          var date = new Date(nowTime+(temp-2*week)*12*60*60*1000);
+                        }else{
+                          var date = new Date(nowTime+(temp-2*week+14)*12*60*60*1000);
+                        }
+                        var nian = date.getFullYear();
+                        var yue = date.getMonth()+1;
+                        var ri = date.getDate();
+                        var riqi = nian+"-"+(yue<10?"0"+yue:yue)+"-"+(ri<10?"0"+ri:ri);//这一天的日期
+                        var h = arr[date.getDay()]+" "+(newTime[i]%2==0?"下午":"上午")+"<br>"+riqi;
+                        // console.log(h);
+                        if (newTime[i]%2==0){
+                          var title = ["14:00-15:00","15:00-16:00","16:00-17:00","17:00-18:00"];
+                          var value = ["5","6","7","8"];
+                        }else{
+                          var title = ["08:00-09:00","09:00-10:00","10:00-11:00","11:00-12:00"];
+                          var value = ["1","2","3","4"];
+                        }
+
+                        html +='<tr>'
+                            +'<td>'+data.doctor.department.deptName+'</td>'
+                            +'<td>'+h+'</td>'
+                            +'<td name="range">'
+                            +'<input type="radio" name="timeRange" value="'+value[0]+'" title="'+title[0]+'">'
+                            +'<input type="radio" name="timeRange" value="'+value[1]+'" title="'+title[1]+'">'
+                            +'<input type="radio" name="timeRange" value="'+value[2]+'" title="'+title[2]+'">'
+                            +'<input type="radio" name="timeRange" value="'+value[3]+'" title="'+title[3]+'">'
+                            +'</td>'
+                            +'<td>'
+                            +'<a class="layui-btn layui-btn-normal layui-btn-xs" name="register"><i class="layui-icon layui-icon-survey"></i>预约</a>'
+                            +'<input type="hidden" name="date" value="'+ riqi +'">'
+                            +'</td>'
+                            +'</tr>';
+                      }
+                    }else{
+                      //暂无班表
+                      html += '<tr>'
+                          +'<td colspan="4" style="text-align: center">暂无班表信息</td>'
+                          +'</tr>';
+                    }
+                  $("#tbody").html(html);
+                  form.render();//刷新radio
+
+                  //预约按钮绑定提交事件
+                  $("a[name='register']").on('click', function () {
+                    var date = $(this).siblings("input[name='date']").val();
+                    var timeRange = $(this).parent().siblings("td[name='range']").children("input[name='timeRange']:checked").val();
+                    var doctorId = $("#doctorId").val();
+                    if (!timeRange) {
+                      layer.msg("请选择时间段");
+                      return false;
+                    }
+                    //ajax提交
+                    $.ajax({
+                      url: "./register",
+                      type: "post",
+                      dataType: "json",
+                      data:{
+                        date:date,
+                        timeRange:timeRange,
+                        doctorId:doctorId,
+                      },
+                      beforeSend:function(){
+                        showLoad();
+                      },
+                      success: function (d) {
+                        closeLoad();
+                        if (d.responseCode == 0) {
+                          parent.layui.layer.msg("挂号成功");
+                          backToList();
+                        } else {
+                          layer.msg(d.msg);
+                        }
+                      }
+                    });
+                  });
+
                 },
                 error: function () {
-                    //获取科室失败
+                    //获取医生信息失败
                 }
             });
         }
 
-
-        //字段自定义验证
-        form.verify({
-            deptName:[/^([\u4E00-\u9FA5A-Za-z0-9]){0,10}$/, '科室名称必须是长度小于10的字符,且不能有特殊符号'],
-            deptCode:[/^[0-9]{3}$/,'科室编码必须是三位数字'],
-            sort: function (value) {
-                if (value<1 || value >99) {
-                    return '排序必须1到99位';
-                }else if(isNaN(value)){
-                    return '排序必须为整数';
-                }
-            },
-            instruction:function (value) {
-              if (value.length >100) {
-                return '科室简介长度必须小于100';
-              }
-            },
-        });
-
-        //新增、编辑
-
-        //监听提交
-        form.on('submit(layuiadmin-app-form-submit)', function (e) {
-                <c:if test="${empty id}">var url = "./save";
-            </c:if>
-                <c:if test="${not empty id}">var url = "./update";
-            </c:if>
-
-            $("#departmentForm").ajaxSubmit({
-                type: "post",
-                url: url,
-                dataType: "json",
-                success: function (data) {
-                    if (data.responseCode == 0) {
-                        //提交成功
-                        parent.layui.layer.msg("提交成功");
-                        backToList();
-                        parent.layui.table.reload('departmentTable'); //重载表格
-                    } else {
-                        layer.msg(data.msg);
-                    }
-                },
-                error: function () {
-                    alert("error!");
-                }
-            });
-            return false;
-        });
 
     });
 

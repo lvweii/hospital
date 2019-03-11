@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dynamic-hibernate namespace="com.jsict.biz.model.Register">
+
+
+    <query name="getListByParams" qlType="SQL">
+        <![CDATA[
+            select r.id,r.user_id as userId,r.doctor_id as doctorId,r.register_time as registerTime,r.choose_date as chooseDate,
+            r.am,r.time_range as timeRange,r.finish_time as finishTime,r.sort
+            from register r
+            where r.del_flag = :delFlag
+            #if($doctorId && $doctorId.length() > 0)
+                AND (r.doctor_id = :doctorId)
+            #end
+            #if($chooseDate)
+                AND (r.choose_date = :chooseDate)
+            #end
+            #if($timeRange && $timeRange.length() > 0)
+                AND (r.time_range = :timeRange)
+            #end
+            #if($status && $status.length() > 0)
+                AND (r.status = :status)
+            #end
+            #if($am && $am.length() > 0)
+                AND (r.am = :am)
+            #end
+            order by r.time_range,r.sort
+	      ]]>
+    </query>
+    
+</dynamic-hibernate>

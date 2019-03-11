@@ -1,13 +1,17 @@
 package com.jsict.biz.controller;
 
 import com.jsict.biz.dao.DepartmentDao;
+import com.jsict.biz.dao.RegisterDao;
 import com.jsict.biz.dao.UserDao;
 import com.jsict.biz.model.Department;
 import com.jsict.biz.model.Register;
 import com.jsict.biz.model.User;
+import com.jsict.biz.service.RegisterService;
 import com.jsict.biz.service.UserService;
 import com.jsict.framework.core.controller.AbstractGenericController;
+import com.jsict.framework.core.controller.Response;
 import com.jsict.framework.core.controller.RestControllerException;
+import com.jsict.framework.core.security.model.IUser;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -15,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +28,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -45,6 +51,12 @@ public class RegisterController extends
 
   @Autowired
   private UserService userService;
+
+  @Autowired
+  private RegisterService registerService;
+
+  @Autowired
+  private RegisterDao registerDao;
 
   @RequestMapping(value = "/doctorPage", method = RequestMethod.POST, produces = "application/json")
   @ResponseBody
@@ -108,6 +120,34 @@ public class RegisterController extends
     params.put("type",type);
     List<Department> list = departmentDao.getObjectListBySqlKey("getListByNameCode",params,Department.class);
     return list;
+  }
+
+  @RequestMapping(value = {"/getInfo/{id}"}, method = {RequestMethod.GET}, produces = {"application/json"})
+  @ResponseBody
+  public Map<String,Object> getInfo(@PathVariable String id) {
+    Map<String,Object> returnMap = new HashMap<>();
+    User doctor = userService.get(id);
+    returnMap.put("doctor",doctor);//医生信息
+    IUser user = (IUser)SecurityUtils.getSubject().getPrincipal();//获取当前登入用户
+    if (user != null){
+      returnMap.put("userId",user.getId());//患者id
+    }
+
+    Map<String,Object> params = new HashMap<>();
+    params.put("delFlag",0);
+    params.put("doctorId",id);
+    params.put("status","0");
+    List<Register> list = registerDao.getObjectListBySqlKey("getListByParams",params,Register.class);//该医生所有的挂号信息
+    returnMap.put("list",list);
+
+    return returnMap;
+  }
+
+  @RequestMapping(value = {"/register"}, method = {RequestMethod.POST}, produces = {"application/json"})
+  @ResponseBody
+  public Response register(Register register) {
+    Response response = registerService.saveRegister(register);
+    return response;
   }
 
 }

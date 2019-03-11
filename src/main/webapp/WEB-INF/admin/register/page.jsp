@@ -211,7 +211,7 @@
 
         function register(data) {
             var url = "${ctxPath}/register/?method=register&id="+ data.id;
-            openSubmitLayer(url, "预约挂号", '800px', '500px');
+            openCloseLayer(url, "预约挂号", '800px', '500px');
         }
 
         function del(value) {

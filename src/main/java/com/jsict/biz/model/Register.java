@@ -7,6 +7,7 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
  * Register ：
@@ -48,6 +49,12 @@ public class Register extends BaseEntity<String> {
 
   @Column(name = "sort", length = 3)
   private Integer sort;
+
+  @Column(name = "range_sort", length = 10)
+  private String rangeSort;
+
+  @Transient
+  private String date;
 
   public String getUserId() {
     return userId;
@@ -119,5 +126,21 @@ public class Register extends BaseEntity<String> {
 
   public void setSort(Integer sort) {
     this.sort = sort;
+  }
+
+  public String getDate() {
+    return date;
+  }
+
+  public void setDate(String date) {
+    this.date = date;
+  }
+
+  public String getRangeSort() {
+    return rangeSort;
+  }
+
+  public void setRangeSort(String rangeSort) {
+    this.rangeSort = rangeSort;
   }
 }

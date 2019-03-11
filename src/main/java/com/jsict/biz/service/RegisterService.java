@@ -1,6 +1,7 @@
 package com.jsict.biz.service;
 
 import com.jsict.biz.model.Register;
+import com.jsict.framework.core.controller.Response;
 import com.jsict.framework.core.service.GeneriService;
 
 /**
@@ -11,4 +12,5 @@ import com.jsict.framework.core.service.GeneriService;
  */
 public interface RegisterService extends GeneriService<Register, String> {
 
+  Response saveRegister(Register register);
 }

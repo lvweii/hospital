@@ -43,12 +43,12 @@ public class UserDaoImpl extends GenericHibernateDaoImpl<User, String> implement
         dbUser.setPasswordErrorTimes(user.getPasswordErrorTimes());
         if(StringUtils.isNotBlank(user.getPassword()))
             dbUser.setPassword(user.getPassword());
-        if(user.getType().contains("|")){
+        if(user.getType() != null && user.getType().contains("|")){
             String[] types = user.getType().split("\\|");
             dbUser.setType(types[2]);
         }else
             dbUser.setType(user.getType());
-        if(user.getTitle().contains("|")){
+        if(user.getTitle() != null && user.getTitle().contains("|")){
             String[] titles = user.getTitle().split("\\|");
             dbUser.setTitle(titles[2]);
         }else
