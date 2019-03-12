@@ -23,6 +23,9 @@
             #if($am && $am.length() > 0)
                 AND (r.am = :am)
             #end
+            #if($userId && $userId.length() > 0)
+                AND (r.user_id = :userId)
+            #end
             order by r.time_range,r.sort
 	      ]]>
     </query>

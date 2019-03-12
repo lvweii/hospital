@@ -141,6 +141,7 @@
 
                     //加载班表信息
                     var html = '';
+                    var index = 0;
                     if(data.doctor.time){
                       var time = data.doctor.time.substring(0,data.doctor.time.length-1);
                       var timeArr = time.split(",");
@@ -184,12 +185,37 @@
                         html +='<tr>'
                             +'<td>'+data.doctor.department.deptName+'</td>'
                             +'<td>'+h+'</td>'
-                            +'<td name="range">'
-                            +'<input type="radio" name="timeRange" value="'+value[0]+'" title="'+title[0]+'">'
-                            +'<input type="radio" name="timeRange" value="'+value[1]+'" title="'+title[1]+'">'
-                            +'<input type="radio" name="timeRange" value="'+value[2]+'" title="'+title[2]+'">'
-                            +'<input type="radio" name="timeRange" value="'+value[3]+'" title="'+title[3]+'">'
-                            +'</td>'
+                            +'<td name="range">';
+                        // console.log(data.result[index][newTime[i]][0][1]);
+                        if(data.result[index][newTime[i]][0][1] == true){
+                          html += '<input type="radio" name="timeRange" value="'+value[0]+'" title="'+title[0]+'">'
+                        }else{
+                          html += '<input type="radio" name="timeRange" value="'+value[0]+'" title="'+title[0]+'" disabled>'
+                        }
+
+                        if(data.result[index][newTime[i]][1][2] == true){
+                          html += '<input type="radio" name="timeRange" value="'+value[1]+'" title="'+title[1]+'">'
+                        }else{
+                          html += '<input type="radio" name="timeRange" value="'+value[1]+'" title="'+title[1]+'" disabled>'
+                        }
+
+                        if(data.result[index][newTime[i]][2][3] == true){
+                          html += '<input type="radio" name="timeRange" value="'+value[2]+'" title="'+title[2]+'">'
+                        }else{
+                          html += '<input type="radio" name="timeRange" value="'+value[2]+'" title="'+title[2]+'" disabled>'
+                        }
+
+                        if(data.result[index][newTime[i]][3][4] == true){
+                          html += '<input type="radio" name="timeRange" value="'+value[3]+'" title="'+title[3]+'">'
+                        }else{
+                          html += '<input type="radio" name="timeRange" value="'+value[3]+'" title="'+title[3]+'" disabled>'
+                        }
+                        index++;
+                            // +'<input type="radio" name="timeRange" value="'+value[0]+'" title="'+title[0]+'">'
+                            // +'<input type="radio" name="timeRange" value="'+value[1]+'" title="'+title[1]+'">'
+                            // +'<input type="radio" name="timeRange" value="'+value[2]+'" title="'+title[2]+'">'
+                            // +'<input type="radio" name="timeRange" value="'+value[3]+'" title="'+title[3]+'">'
+                            html+='</td>'
                             +'<td>'
                             +'<a class="layui-btn layui-btn-normal layui-btn-xs" name="register"><i class="layui-icon layui-icon-survey"></i>预约</a>'
                             +'<input type="hidden" name="date" value="'+ riqi +'">'
