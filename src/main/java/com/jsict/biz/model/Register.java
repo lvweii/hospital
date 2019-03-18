@@ -6,6 +6,9 @@ import com.jsict.framework.core.model.BaseEntity;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -23,8 +26,16 @@ public class Register extends BaseEntity<String> {
   @Column(name = "user_id", length = 32)
   private String userId;
 
+  @ManyToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "user_id", insertable = false, updatable = false)
+  private User patient;
+
   @Column(name = "doctor_id", length = 32)
   private String doctorId;
+
+  @ManyToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "doctor_id", insertable = false, updatable = false)
+  private User doctor;
 
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone="GMT+8")
   @Column(name = "register_time")
@@ -55,6 +66,9 @@ public class Register extends BaseEntity<String> {
 
   @Transient
   private String date;
+
+  @Transient
+  private String deptId;
 
   public String getUserId() {
     return userId;
@@ -142,5 +156,29 @@ public class Register extends BaseEntity<String> {
 
   public void setRangeSort(String rangeSort) {
     this.rangeSort = rangeSort;
+  }
+
+  public User getPatient() {
+    return patient;
+  }
+
+  public void setPatient(User patient) {
+    this.patient = patient;
+  }
+
+  public User getDoctor() {
+    return doctor;
+  }
+
+  public void setDoctor(User doctor) {
+    this.doctor = doctor;
+  }
+
+  public String getDeptId() {
+    return deptId;
+  }
+
+  public void setDeptId(String deptId) {
+    this.deptId = deptId;
   }
 }

@@ -1,6 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dynamic-hibernate namespace="com.jsict.biz.model.Register">
 
+  <query name="selectByPage" qlType="JPQL">
+    <![CDATA[
+        select t from Register t
+        left join t.doctor d
+        Where t.delFlag = :delFlag
+        #if($deptId && $deptId.length() > 0)
+        AND d.deptId = :deptId
+        #end
+        #if($chooseDate)
+        AND t.chooseDate = :chooseDate
+        #end
+        #if($userId && $userId.length() > 0)
+        AND t.userId = :userId
+        #end
+        ]]> order by t.chooseDate desc,t.timeRange asc
+  </query>
 
     <query name="getListByParams" qlType="SQL">
         <![CDATA[

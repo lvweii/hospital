@@ -69,12 +69,12 @@ public class RegisterServiceImpl extends GeneriServiceImpl<Register, String> imp
     }
     params.remove("timeRange");
     IUser user = (IUser)SecurityUtils.getSubject().getPrincipal();//获取当前登入用户
-    if (user == null) {
+    if (user != null) {
       params.put("userId",user.getId());
     }
     List<Register> selfList = registerDao.getObjectListBySqlKey("getListByParams",params,Register.class);//自己单个半天的挂号信息，不包括已经退号的
     if (selfList != null && selfList.size() > 0){
-      response = new Response(ERROR,"当前所选半天内已存在挂号信息");
+      response = new Response(ERROR,"您在当前半天内已存在挂号信息");
       return response;
     }
     User doctor = userDao.getWithoutDic(register.getDoctorId());

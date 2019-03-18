@@ -60,6 +60,15 @@ public class RegisterController extends
   @Autowired
   private RegisterDao registerDao;
 
+  /**
+   *
+   * 功能描述: 预约挂号页医生列表
+   *
+   * @param:
+   * @return:
+   * @auther: Lv
+   * @date: 2019/3/18 10:42
+   */
   @RequestMapping(value = "/doctorPage", method = RequestMethod.POST, produces = "application/json")
   @ResponseBody
   public Page<User> doctorPage(@ModelAttribute User user, @PageableDefault Pageable pageable){
@@ -104,6 +113,76 @@ public class RegisterController extends
       throw new RestControllerException("翻页查询出错", e);
     }
   }
+
+  @RequestMapping(value = "/patientRegisterPage", method = RequestMethod.POST, produces = "application/json")
+  @ResponseBody
+  public Page<Register> patientRegisterPage(@ModelAttribute Register register, @PageableDefault Pageable pageable){
+    try{
+      User user = (User)SecurityUtils.getSubject().getPrincipal();
+      if (user != null && !user.isAdmin()){
+        register.setUserId(user.getId());
+      }
+      return registerService.findByPage(register, pageable);
+    }catch(Exception e){
+      logger.error("翻页查询出错", e);
+      throw new RestControllerException("翻页查询出错", e);
+    }
+  }
+
+  /**
+   *
+   * 功能描述: 
+   *
+   * @param: 退号
+   * @return: 
+   * @auther: Lv
+   * @date: 2019/3/18 16:24
+   */
+  @RequestMapping(value = {"/cancel/{id}"}, method = {RequestMethod.POST}, produces = {"application/json"})
+  @ResponseBody
+  public Response delete(@PathVariable String id) {
+    Response response;
+    try {
+      Register register = this.generiService.getWithoutDic(id);
+      if (!"0".equals(register.getStatus())){
+        //只有待就诊状态的号可以退
+        response = new Response(ERROR,"只有待就诊状态的号可以退");
+        return response;
+      }
+      Date chooseDate = register.getChooseDate();//选择的日期
+      String am = register.getAm();//0、上午  1、下午
+      Date now = new Date();//当前系统时间
+      Calendar c = Calendar.getInstance();
+      c.setTime(chooseDate);
+      if ("0".equals(am)){
+        //上午截止时间设为12点
+        c.set(Calendar.HOUR_OF_DAY, 12);
+      }else{
+        //下午截止时间设为18点
+        c.set(Calendar.HOUR_OF_DAY, 18);
+      }
+      if (now.getTime() > c.getTimeInMillis()){
+        response = new Response(ERROR,"已超过规定退号的时间，无法退号");
+        return response;
+      }
+
+      //退号
+      register.setStatus("2");
+      User user = (User)SecurityUtils.getSubject().getPrincipal();
+      if (user != null){
+        user.setUpdaterId(user.getId());
+      }
+      this.generiService.update(register);
+
+    } catch (Exception var4) {
+      logger.error(var4.getLocalizedMessage(), var4);
+      response = new Response(ERROR, var4.getLocalizedMessage());
+      return response;
+    }
+    response = new Response(SUCCESS);
+    return response;
+  }
+  
 
   /**
    *
