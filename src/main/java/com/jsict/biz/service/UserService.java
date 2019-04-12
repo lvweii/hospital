@@ -58,4 +58,6 @@ public interface UserService extends GeneriService<User, String> {
     void disable(String id);
 
     List<User> findAll();
+
+    void addScore(String userId,int score);
 }

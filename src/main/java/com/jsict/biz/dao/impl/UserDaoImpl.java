@@ -21,12 +21,14 @@ public class UserDaoImpl extends GenericHibernateDaoImpl<User, String> implement
         user.setId(null);
         String defualtPassword = Encodes.encodeMD5(sysConfig.getConfig().getString("defaultPassword"));
         user.setPassword(defualtPassword);
+        user.setScore(0);
         return super.save(user);
     }
 
     @Override
     public User update(User user){
         User dbUser = getById(user.getId());
+        dbUser.setPhoto(user.getPhoto());
         dbUser.setSort(user.getSort());
         dbUser.setBirthday(user.getBirthday());
         dbUser.setDeptId(user.getDeptId());
@@ -65,5 +67,12 @@ public class UserDaoImpl extends GenericHibernateDaoImpl<User, String> implement
             dbUser.setUpdaterId(iu.getId());
         }
         return super.update(dbUser);
+    }
+
+    @Override
+    public User updateScore(User user) {
+        this.encodeEntity(user);
+        this.entityManager.merge(user);
+        return user;
     }
 }

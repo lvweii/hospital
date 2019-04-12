@@ -1,6 +1,7 @@
 package com.jsict.biz.service.impl;
 
 import com.jsict.biz.dao.DepartmentDao;
+import com.jsict.biz.dao.UserDao;
 import com.jsict.biz.model.Department;
 import com.jsict.biz.model.User;
 import com.jsict.biz.service.UserService;
@@ -12,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +28,9 @@ public class UserServiceImpl extends GeneriServiceImpl<User, String> implements 
 
     @Autowired
     private DepartmentDao departmentDao;
+
+    @Autowired
+    private UserDao userDao;
 
     @Autowired
     private SysConfig sysConfig;
@@ -164,6 +169,28 @@ public class UserServiceImpl extends GeneriServiceImpl<User, String> implements 
         Map<String, Object> params = new HashMap<>();
         params.put("delFlag", 0);
         return genericDao.findByProperty(params);
+    }
+
+    @Transactional
+    @Override
+    public void addScore(String userId,int score){
+        try {
+            User loginUser = (User)SecurityUtils.getSubject().getPrincipal();
+            User user = this.getWithoutDic(userId);
+            if (loginUser != null) {
+                user.setUpdaterId(loginUser.getId());
+            }
+            user.setUpdatedDate(new Date());
+            user.setScore(user.getScore() + score);
+            updateScore(user);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    @Transactional
+    public User updateScore(User user) {
+        return userDao.updateScore(user);
     }
 
     private void troggleEnable(String id, Integer enable){

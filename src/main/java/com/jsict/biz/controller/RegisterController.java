@@ -10,6 +10,7 @@ import com.jsict.biz.model.User;
 import com.jsict.biz.service.RegisterService;
 import com.jsict.biz.service.UserService;
 import com.jsict.framework.core.controller.AbstractGenericController;
+import com.jsict.framework.core.controller.CSRFTokenManager;
 import com.jsict.framework.core.controller.Response;
 import com.jsict.framework.core.controller.RestControllerException;
 import com.jsict.framework.core.security.model.IUser;
@@ -20,6 +21,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
@@ -33,6 +35,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
@@ -42,7 +45,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
  * @since 2019/2/28 20:20
  */
 @Controller
-@RequestMapping("/register")
 public class RegisterController extends
     AbstractGenericController<Register, String, Register> {
 
@@ -60,6 +62,22 @@ public class RegisterController extends
   @Autowired
   private RegisterDao registerDao;
 
+  @RequestMapping(value = {"register/"}, method = {RequestMethod.GET})
+  public String execute2(HttpServletRequest request, @RequestParam String method, @RequestParam(required = false) String id, @RequestParam(required = false) String moduleId) {
+//    String controllerMapping = ((RequestMapping)this.getClass().getAnnotation(RequestMapping.class)).value()[0];
+    String csrfToken = CSRFTokenManager.getTokenForSession(request.getSession());
+    if (StringUtils.isNotBlank(id)) {
+      request.setAttribute("id", id);
+    }
+
+    if (StringUtils.isNotBlank(moduleId)) {
+      request.getSession().setAttribute("moduleId", moduleId);
+    }
+
+    request.setAttribute("CSRFToken", csrfToken);
+    return "register" + "/" + method;
+  }
+
   /**
    *
    * 功能描述: 预约挂号页医生列表
@@ -69,7 +87,7 @@ public class RegisterController extends
    * @auther: Lv
    * @date: 2019/3/18 10:42
    */
-  @RequestMapping(value = "/doctorPage", method = RequestMethod.POST, produces = "application/json")
+  @RequestMapping(value = "/register/doctorPage", method = RequestMethod.POST, produces = "application/json")
   @ResponseBody
   public Page<User> doctorPage(@ModelAttribute User user, @PageableDefault Pageable pageable){
     try{
@@ -114,7 +132,15 @@ public class RegisterController extends
     }
   }
 
-  @RequestMapping(value = "/patientRegisterPage", method = RequestMethod.POST, produces = "application/json")
+  /**
+   *
+   * 功能描述: 我的预约列表
+   *
+   * @param:
+   * @return:
+   * @auther: Lv
+   */
+  @RequestMapping(value = "/register/patientRegisterPage", method = RequestMethod.POST, produces = "application/json")
   @ResponseBody
   public Page<Register> patientRegisterPage(@ModelAttribute Register register, @PageableDefault Pageable pageable){
     try{
@@ -123,6 +149,45 @@ public class RegisterController extends
         register.setUserId(user.getId());
       }
       return registerService.findByPage(register, pageable);
+    }catch(Exception e){
+      logger.error("翻页查询出错", e);
+      throw new RestControllerException("翻页查询出错", e);
+    }
+  }
+
+  @RequestMapping(value = {"doc/"}, method = {RequestMethod.GET})
+  public String execute1(HttpServletRequest request, @RequestParam String method, @RequestParam(required = false) String id, @RequestParam(required = false) String moduleId) {
+    String csrfToken = CSRFTokenManager.getTokenForSession(request.getSession());
+    if (StringUtils.isNotBlank(id)) {
+      request.setAttribute("id", id);
+    }
+
+    if (StringUtils.isNotBlank(moduleId)) {
+      request.getSession().setAttribute("moduleId", moduleId);
+    }
+
+    request.setAttribute("CSRFToken", csrfToken);
+    return  "register/" + method;
+  }
+
+  /**
+   *
+   * 功能描述:门诊诊断列表
+   *
+   * @param:
+   * @return:
+   * @auther: Lv
+   * @date: 2019/4/9 19:51
+   */
+  @RequestMapping(value = "doc/doctorRegisterPage", method = RequestMethod.POST, produces = "application/json")
+  @ResponseBody
+  public Page<Register> doctorRegisterPage(@ModelAttribute Register register, @PageableDefault Pageable pageable){
+    try{
+      User user = (User)SecurityUtils.getSubject().getPrincipal();
+      if (user != null && !user.isAdmin()){
+        register.setDoctorId(user.getId());
+      }
+      return registerService.findByPageForDoctor(register, pageable);
     }catch(Exception e){
       logger.error("翻页查询出错", e);
       throw new RestControllerException("翻页查询出错", e);
@@ -138,7 +203,7 @@ public class RegisterController extends
    * @auther: Lv
    * @date: 2019/3/18 16:24
    */
-  @RequestMapping(value = {"/cancel/{id}"}, method = {RequestMethod.POST}, produces = {"application/json"})
+  @RequestMapping(value = {"/register/cancel/{id}"}, method = {RequestMethod.POST}, produces = {"application/json"})
   @ResponseBody
   public Response delete(@PathVariable String id) {
     Response response;
@@ -173,7 +238,10 @@ public class RegisterController extends
         user.setUpdaterId(user.getId());
       }
       this.generiService.update(register);
-
+      //退号-2分
+      if (user != null){
+        userService.addScore(user.getId(),-2);
+      }
     } catch (Exception var4) {
       logger.error(var4.getLocalizedMessage(), var4);
       response = new Response(ERROR, var4.getLocalizedMessage());
@@ -182,7 +250,120 @@ public class RegisterController extends
     response = new Response(SUCCESS);
     return response;
   }
-  
+
+  /**
+   *
+   * 功能描述:
+   *
+   * @param: 就诊
+   * @return:
+   * @auther: Lv
+   * @date: 2019/4/11 19:17
+   */
+  @RequestMapping(value = {"/doc/treat/{id}"}, method = {RequestMethod.POST}, produces = {"application/json"})
+  @ResponseBody
+  public Response treat(@PathVariable String id) {
+    Response response;
+    try {
+      Register register = this.generiService.getWithoutDic(id);
+      if (!"0".equals(register.getStatus())){
+        response = new Response(ERROR, "只能就诊待就诊状态的患者");
+        return response;
+      }
+      Long now = new Date().getTime();
+      Long chooseDate = register.getChooseDate().getTime();
+      Long start = 0L;
+      Long end = 0L;
+      if("0".equals(register.getAm())){
+        //上午8:00-12:00
+        start = chooseDate + 8*60*60*1000;
+        end = chooseDate + 12*60*60*1000;
+      }else{
+        //下午14:00-18:00
+        start = chooseDate + 14*60*60*1000;
+        end = chooseDate + 18*60*60*1000;
+      }
+      if (now < start){
+        response = new Response(ERROR, "还未到就诊时间");
+        return response;
+      }
+      if (now > end){
+        response = new Response(ERROR, "超出规定的就诊时间");
+        return response;
+      }
+      //开始就诊
+      User user = (User)SecurityUtils.getSubject().getPrincipal();
+      if (user != null){
+        register.setUpdaterId(user.getId());
+      }
+      register.setStatus("1");
+      register.setFinishTime(new Date());
+      this.generiService.update(register);
+      //就诊成功+3
+      userService.addScore(register.getUserId(),3);
+    } catch (Exception var4) {
+      logger.error(var4.getLocalizedMessage(), var4);
+      response = new Response(ERROR, var4.getLocalizedMessage());
+      return response;
+    }
+    response = new Response(SUCCESS);
+    return response;
+  }
+
+
+  /**
+   *
+   * 功能描述:
+   *
+   * @param: 同步过期的挂号
+   * @return:
+   * @auther: Lv
+   * @date: 2019/4/11 20:33
+   */
+  @RequestMapping(value = {"/doc/refresh"}, method = {RequestMethod.POST}, produces = {"application/json"})
+  @ResponseBody
+  public Response treat() {
+    Response response;
+    try {
+      Map<String,Object> params = new HashMap<>();
+      params.put("delFlag",0);
+      params.put("status","0");
+      User user = (User)SecurityUtils.getSubject().getPrincipal();
+      if (user != null && !user.isAdmin()){
+        params.put("doctorId",user.getId());
+      }
+      List<Register> list = registerDao.getObjectListBySqlKey("getListByParams",params,Register.class);//该医生所有的挂号信息
+      for (Register temp:list) {
+        Register register = this.generiService.getWithoutDic(temp.getId());
+        Long now = new Date().getTime();
+        Long chooseDate = register.getChooseDate().getTime();
+        Long end = 0L;
+        if("0".equals(register.getAm())){
+          //上午8:00-12:00
+          end = chooseDate + 12*60*60*1000;
+        }else{
+          //下午14:00-18:00
+          end = chooseDate + 18*60*60*1000;
+        }
+        if (now > end){
+          //当前时间超过了挂号就诊时间，需要将这些挂号状态改为3（过期）
+          if (user != null) {
+            register.setUpdaterId(user.getId());
+          }
+          register.setStatus("3");
+          this.generiService.update(register);
+          //弃号-3分
+          userService.addScore(register.getUserId(),-3);
+        }
+      }
+    } catch (Exception var4) {
+      logger.error(var4.getLocalizedMessage(), var4);
+      response = new Response(ERROR, var4.getLocalizedMessage());
+      return response;
+    }
+    response = new Response(SUCCESS);
+    return response;
+  }
 
   /**
    *
@@ -193,7 +374,7 @@ public class RegisterController extends
    * @auther: Lv
    * @date: 2019/2/25 10:27
    */
-  @RequestMapping(value = "/getDeptList", method = RequestMethod.GET, produces = "application/json")
+  @RequestMapping(value = {"/register/getDeptList","doc/getDeptList"}, method = RequestMethod.GET, produces = "application/json")
   @ResponseBody
   public List<Department> getDeptList(String type){
     Map<String,Object> params = new HashMap<>();
@@ -203,7 +384,7 @@ public class RegisterController extends
     return list;
   }
 
-  @RequestMapping(value = {"/getInfo/{id}"}, method = {RequestMethod.GET}, produces = {"application/json"})
+  @RequestMapping(value = {"/register/getInfo/{id}"}, method = {RequestMethod.GET}, produces = {"application/json"})
   @ResponseBody
   public Map<String,Object> getInfo(@PathVariable String id) {
     Map<String,Object> returnMap = new HashMap<>();
@@ -341,7 +522,7 @@ public class RegisterController extends
     return returnMap;
   }
 
-  @RequestMapping(value = {"/register"}, method = {RequestMethod.POST}, produces = {"application/json"})
+  @RequestMapping(value = {"/register/register"}, method = {RequestMethod.POST}, produces = {"application/json"})
   @ResponseBody
   public Response register(Register register) {
     Response response = registerService.saveRegister(register);

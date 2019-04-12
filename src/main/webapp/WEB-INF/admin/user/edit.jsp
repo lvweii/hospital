@@ -137,6 +137,16 @@
             </div>
         </div>
         <div class="layui-form-item">
+            <label class="layui-form-label">照片</label>
+            <div class="layui-upload" style="margin-left: 110px;position: relative">
+                <button type="button" class="layui-btn" id="fileUpload" style="margin: 2.5px 0px 2.5px 10px;position: absolute;top: 0px;">
+                    <i class="layui-icon">&#xe681;</i>选择照片
+                </button>
+                <img id="img" src="" width="100" height="100" style="display: none;position: absolute;left: 150px;">
+                <input type="hidden" id="photo" name="photo">
+            </div>
+        </div>
+        <div class="layui-form-item">
             <label class="layui-form-label">角色</label>
             <div class="layui-input-inline">
                 <a class="layui-icon" href="#" style="font-size: 30px; color: #33ABA0;" id="roles">&#xe654;</a><br>
@@ -150,10 +160,11 @@
     </form>
 </div>
 <script>
-    layui.use(['form', 'layedit', 'laydate','layer'], function () {
+    layui.use(['form', 'layedit', 'laydate','layer','upload'], function () {
         var form = layui.form
             , layer = layui.layer
             , laydate = layui.laydate
+            , upload = layui.upload
             , $ = layui.jquery;
 
         window.roleIdArr = [];
@@ -166,6 +177,26 @@
             elem: '#birthday',
             type: 'date'
         });
+
+      upload.render({
+        elem: '#fileUpload',
+        // url: '/upload/',
+        multiple: false,
+        accept: 'images',
+        auto: false,
+        bindAction: '#uploadBtn',
+        choose: function(obj){
+          //预读本地文件示例，不支持ie8
+          obj.preview(function(index, file, result){
+            console.log(file);
+            $("#img").attr("src",result);
+            $("#img").show();
+          });
+        },
+        done: function(res){
+          //上传完毕
+        }
+      });
 
         //用户类型下拉事件监听
       form.on('select(type)', function(data){
@@ -375,6 +406,11 @@
 
                     $("#id").val(data.id);
                     $("#type").val(data.type);
+                    if (data.photo){
+                      $("#img").attr("src",data.photo);
+                      $("#img").show();
+                      $("#photo").val(data.photo);
+                    }
 
                     var html = "<option value=''>请选择</option>";
                     if (null !=data.selectDeptList && data.selectDeptList.length>0){

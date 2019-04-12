@@ -18,6 +18,23 @@
         ]]> order by t.chooseDate desc,t.timeRange asc
   </query>
 
+  <query name="selectByPageForDoctor" qlType="JPQL">
+    <![CDATA[
+        select t from Register t
+        left join t.doctor d
+        Where t.delFlag = :delFlag
+        #if($deptId && $deptId.length() > 0)
+        AND d.deptId = :deptId
+        #end
+        #if($chooseDate)
+        AND t.chooseDate = :chooseDate
+        #end
+        #if($doctorId && $doctorId.length() > 0)
+        AND t.doctorId = :doctorId
+        #end
+        ]]> order by t.chooseDate desc,t.timeRange asc,t.sort asc
+  </query>
+
     <query name="getListByParams" qlType="SQL">
         <![CDATA[
             select r.id,r.user_id as userId,r.doctor_id as doctorId,r.register_time as registerTime,r.choose_date as chooseDate,

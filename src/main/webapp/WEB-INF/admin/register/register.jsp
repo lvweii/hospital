@@ -4,25 +4,31 @@
 <form class="layui-form" action="" id="departmentForm" lay-filter="deptForm">
     <input id="id" name="id" type="hidden">
     <input name="CSRFToken" type="hidden" value="${CSRFToken}">
-    <div class="layui-form-item" style="margin-bottom: 0px;">
-        <label class="layui-form-label" style="padding: 4px 15px 4px 0px;width: 60px;">姓名：</label>
-        <div class="layui-input-block" style="margin-left: 75px">
-            <label id="doctorName" class="layui-form-label" style="text-align: left;padding: 4px 0px;width: 200px;">-</label>
-            <input class="layui-input" type="hidden" name="doctorId" id="doctorId" />
+        <div class="layui-form-item" style="margin-bottom: 0px;">
+            <label class="layui-form-label" style="padding: 4px 15px 4px 0px;width: 60px;">姓名：</label>
+            <div class="layui-input-block" style="margin-left: 75px">
+                <label id="doctorName" class="layui-form-label" style="text-align: left;padding: 4px 0px;width: 200px;">-</label>
+                <input class="layui-input" type="hidden" name="doctorId" id="doctorId" />
+            </div>
         </div>
-    </div>
-    <div class="layui-form-item" style="margin-bottom: 0px;">
-        <label class="layui-form-label" style="padding: 4px 15px 4px 0px;width: 60px;">科室：</label>
-        <div class="layui-input-block" style="margin-left: 75px">
-            <label id="deptName" class="layui-form-label" style="text-align: left;padding: 4px 0px;width: 200px;">-</label>
+        <div class="layui-form-item" style="margin-bottom: 0px;">
+            <label class="layui-form-label" style="padding: 4px 15px 4px 0px;width: 60px;">科室：</label>
+            <div class="layui-input-block" style="margin-left: 75px">
+                <label id="deptName" class="layui-form-label" style="text-align: left;padding: 4px 0px;width: 200px;">-</label>
+            </div>
         </div>
-    </div>
-    <div class="layui-form-item" style="margin-bottom: 0px;">
-        <label class="layui-form-label" style="padding: 4px 15px 4px 0px;width: 60px;">职称：</label>
-        <div class="layui-input-block" style="margin-left: 75px">
-            <label id="title" class="layui-form-label" style="text-align: left;padding: 4px 0px;width: 200px;">-</label>
+        <div class="layui-form-item" style="margin-bottom: 0px;">
+            <label class="layui-form-label" style="padding: 4px 15px 4px 0px;width: 60px;">职称：</label>
+            <div class="layui-input-block" style="margin-left: 75px">
+                <label id="title" class="layui-form-label" style="text-align: left;padding: 4px 0px;width: 200px;">-</label>
+            </div>
         </div>
-    </div>
+        <div class="layui-form-item" style="margin-bottom: 10px;">
+            <label class="layui-form-label" style="padding: 4px 15px 4px 0px;width: 60px;">照片：</label>
+            <div class="layui-input-block" style="margin-left: 75px">
+                <img src="../resources/img/user.jpg" id="img" style="width: 85px;height: 110px">
+            </div>
+        </div>
     <div class="layui-collapse" lay-accordion style="margin-left: 8px;margin-bottom: 15px;">
         <div class="layui-colla-item">
             <h2 class="layui-colla-title" style="background-color: #F2F2D3">医生简介</h2>
@@ -128,7 +134,9 @@
                     dt: dt
                 },
                 success: function (data) {
-                  console.log(data);
+                    if (data.doctor.photo) {
+                      $("#img").attr("src",data.doctor.photo);
+                    }
                     $("#doctorName").text(data.doctor.name);
                     $("#doctorId").val(data.doctor.id);
                     $("#deptName").text(data.doctor.department.deptName);
@@ -159,7 +167,6 @@
                         }
                       }
                       var newTime = thisWeek.concat(nextWeek);//按照时间顺序排列一周内的新的时间
-                      console.log(newTime);
                       for (var i = 0; i < newTime.length; i++) {
                         var temp = newTime[i]%2==0?parseInt(newTime[i]):parseInt(newTime[i])+1;//不用parseInt会当成字符串拼接
                         // console.log(temp);

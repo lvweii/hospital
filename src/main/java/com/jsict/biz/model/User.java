@@ -73,7 +73,7 @@ public class User extends BaseEntity<String> implements IUser<Department, Role>{
     private String mobile;
 
     /** 照片 */
-    @Column(name = "photo", length = 32)
+    @Column(name = "photo", length = 100)
     private String photo;
 
     /** 用户类型 */
@@ -108,6 +108,9 @@ public class User extends BaseEntity<String> implements IUser<Department, Role>{
 
     @Column(name = "enable", length = 1)
     private Integer enable = 1;
+
+    @Column(name = "score", length = 5)
+    private Integer score;
 
     @Transient
     private Role role;
@@ -420,6 +423,14 @@ public class User extends BaseEntity<String> implements IUser<Department, Role>{
 
     public void setAm(String am) {
         this.am = am;
+    }
+
+    public Integer getScore() {
+        return score;
+    }
+
+    public void setScore(Integer score) {
+        this.score = score;
     }
 
     @Override

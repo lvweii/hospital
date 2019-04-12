@@ -96,6 +96,15 @@
                     , {field: '', title: '科室部门', width: 120,templet: function(d){
                         return d.department.deptName;
                       }}
+                    , {field: 'score', title: '信用分', width: 120,templet: function(d){
+                        var info = d.type.split("|");
+                        var type = info[info.length - 2];
+                        if (type == '2'){
+                          return d.score;
+                        } else{
+                          return '-';
+                        }
+                      }}
                     , {fixed: 'right', title: '操作', width: 200,align: 'center', toolbar: '#barOption'}
                 ]]
                 , url: './page'

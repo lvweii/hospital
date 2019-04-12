@@ -6,17 +6,24 @@ import com.jsict.biz.model.Constant;
 import com.jsict.biz.model.Register;
 import com.jsict.biz.model.User;
 import com.jsict.biz.service.RegisterService;
+import com.jsict.biz.service.UserService;
 import com.jsict.framework.core.controller.Response;
 import com.jsict.framework.core.security.model.IUser;
 import com.jsict.framework.core.service.impl.GeneriServiceImpl;
+import com.jsict.framework.utils.BeanMapper;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +43,9 @@ public class RegisterServiceImpl extends GeneriServiceImpl<Register, String> imp
   @Autowired
   private UserDao userDao;
 
+  @Autowired
+  private UserService userService;
+
   protected static final Integer SUCCESS = 0;
   protected static final Integer ERROR = -1;
 
@@ -43,6 +53,15 @@ public class RegisterServiceImpl extends GeneriServiceImpl<Register, String> imp
   @Override
   public Response saveRegister(Register register) {
     Response response;
+    User user = (User)SecurityUtils.getSubject().getPrincipal();//获取当前登入用户
+    if (user != null){
+      //信用分小于等于-10，不能挂号
+      User temp = userService.getWithoutDic(user.getId());
+      if (temp != null && temp.getScore() <= -10){
+        response = new Response(ERROR,"您的信用分小于等于-10，不能挂号！");
+        return response;
+      }
+    }
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     Date chooseDate = null;
     try {
@@ -68,7 +87,6 @@ public class RegisterServiceImpl extends GeneriServiceImpl<Register, String> imp
       params.put("am","1");
     }
     params.remove("timeRange");
-    IUser user = (IUser)SecurityUtils.getSubject().getPrincipal();//获取当前登入用户
     if (user != null) {
       params.put("userId",user.getId());
     }
@@ -113,7 +131,41 @@ public class RegisterServiceImpl extends GeneriServiceImpl<Register, String> imp
     //生成的就诊号格式为时间段-序号，如预约早上八点到九点时间段的第5号患者的就诊号为1-5
     rg.setRangeSort(register.getTimeRange()+"-"+sort);
     super.save(rg);
+    //挂号成功+2分
+    if (user != null) {
+      userService.addScore(user.getId(),2);
+    }
     response = new Response(SUCCESS);
     return response;
+  }
+
+  @Override
+  @Transactional(readOnly = true)
+  public Page<Register> findByPageForDoctor(Register register, Pageable pageable) {
+    Map<String, Object> params = (Map)BeanMapper.map(register, Map.class);
+    List<String> keys = new ArrayList();
+    Iterator var5 = params.entrySet().iterator();
+
+    while(true) {
+      Entry entry;
+      do {
+        if (!var5.hasNext()) {
+          if (!keys.isEmpty()) {
+            var5 = keys.iterator();
+
+            while(var5.hasNext()) {
+              String key = (String)var5.next();
+              params.remove(key);
+            }
+          }
+
+          return this.genericDao.page("selectByPageForDoctor", params, pageable);
+        }
+
+        entry = (Entry)var5.next();
+      } while(entry.getValue() != null && !"".equals(entry.getValue()));
+
+      keys.add((String) entry.getKey());
+    }
   }
 }

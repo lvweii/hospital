@@ -11,6 +11,17 @@ import com.jsict.biz.model.User;
 import com.jsict.framework.core.controller.CSRFTokenManager;
 import com.jsict.framework.core.controller.Response;
 import com.jsict.framework.core.controller.RestControllerException;
+import com.jsict.framework.core.security.model.IUser;
+import com.jsict.framework.filter.EscapeScriptwrapper;
+import com.jsict.framework.utils.Identities;
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.web.servlet.ShiroHttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +36,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 
 /**
@@ -64,6 +77,7 @@ public class UserController extends
         if(list != null && list.size() > 0){
             return new Response(ERROR,"用户名已经存在");
         }
+        //保存用户照片方法在super.save里面调用
         return super.save(entity, paramToken, request);
     }
 
@@ -214,6 +228,50 @@ public class UserController extends
         params.put("name", userQuery);
         params.put("userId",userQuery);
         return userDao.find("selectByPage", params);
+    }
+
+    @Override
+    protected void uploadFile(User user, HttpServletRequest request) throws IOException {
+      String allowedFiles = this.sysConfig.getConfig().getString("allowedFiles");
+      List<String> allowedFileList = new ArrayList();
+      if (StringUtils.isNotBlank(allowedFiles)) {
+        allowedFileList.addAll(Arrays.asList(allowedFiles.split("\\|")));
+      }
+      List<String> paths = new ArrayList<>();
+      String uploadPath = "/userImg";
+      MultipartHttpServletRequest multipartReq = (MultipartHttpServletRequest)request;
+      List<MultipartFile> multipartFileList = multipartReq.getFiles("file");
+      //此处只有一个文件，多文件需要遍历
+      for (MultipartFile f : multipartFileList) {
+        File fileDir = new File(uploadPath);
+        if(!fileDir.exists())
+          fileDir.mkdirs();
+        //文件原始名
+        String originalFilename = f.getOriginalFilename();
+        //新文件名
+        int pos = originalFilename.lastIndexOf('.');
+        String suffix = originalFilename.substring(pos+1);
+        String fileName = Identities.uuid2() + "." + suffix;
+
+        if(!allowedFileList.contains(suffix))
+          throw new RestControllerException("上传文件文件格式不合法，支持的文件格式为：" + allowedFiles.replace("|", "、"));
+
+        File targetFile = new File(fileDir, fileName);
+        FileUtils.copyInputStreamToFile(f.getInputStream(), targetFile);
+        paths.add(uploadPath+"/"+fileName);
+      }
+      if (paths != null && paths.size()>0){
+        String s = "";
+        for (int i = 0;i<paths.size();i++){
+          if (i<paths.size()-1){
+            s += paths.get(i) + ",";
+          }else {
+            s += paths.get(i);
+          }
+        }
+        user.setPhoto(s);
+      }
+
     }
 
 }
