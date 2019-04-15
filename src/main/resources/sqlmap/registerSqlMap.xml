@@ -38,7 +38,7 @@
     <query name="getListByParams" qlType="SQL">
         <![CDATA[
             select r.id,r.user_id as userId,r.doctor_id as doctorId,r.register_time as registerTime,r.choose_date as chooseDate,
-            r.am,r.time_range as timeRange,r.finish_time as finishTime,r.sort
+            r.am,r.time_range as timeRange,r.finish_time as finishTime,r.sort,r.status
             from register r
             where r.del_flag = :delFlag
             #if($doctorId && $doctorId.length() > 0)
